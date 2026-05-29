@@ -11,10 +11,15 @@ export function validarDados(corpo) {
     return false;
   }
 
-const opcoesValidas = ['BAIXA', 'MEDIA', 'ALTA']
-  if (!opcoesValidas.includes(corpo.gravidade.trim().toUpperCase())
-  ) {
+  const opcoesValidas = ["BAIXA", "MEDIA", "ALTA"];
+  if (!opcoesValidas.includes(corpo.gravidade.trim().toUpperCase())) {
     return false;
   }
   return true;
+}
+
+export function incrementarId(lista) {
+  if (lista.length === 0) return 0;
+
+  return Math.max(...lista.map((item) => item.id));
 }

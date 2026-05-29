@@ -1,3 +1,2 @@
-const pacientes = [];
+export const pacientes = [];
 
-export { pacientes };
