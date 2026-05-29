@@ -1,0 +1,3 @@
+const pacientes = [];
+
+export { pacientes };

@@ -1,0 +1,20 @@
+export function validarDados(corpo) {
+  if (!corpo.nome || !corpo.idade || !corpo.sintomas || !corpo.gravidade) {
+    return false;
+  }
+  if (
+    corpo.nome.trim() === "" ||
+    typeof corpo.idade !== "number" ||
+    corpo.sintomas.trim() === "" ||
+    corpo.gravidade.trim() === ""
+  ) {
+    return false;
+  }
+
+const opcoesValidas = ['BAIXA', 'MEDIA', 'ALTA']
+  if (!opcoesValidas.includes(corpo.gravidade.trim().toUpperCase())
+  ) {
+    return false;
+  }
+  return true;
+}
