@@ -6,6 +6,13 @@ const app = express();
 app.use(express.json());
 
 app.get("/pacientes", (req, res) => {
+  const gravidadeBuscada = req.query.gravidade;
+
+  if (gravidadeBuscada) {
+    const pacientesFiltrados = pacientes.filter((p) => p.gravidade === gravidadeBuscada.trim().toUpperCase());
+    return res.status(200).json(pacientesFiltrados);
+  }
+
   return res.status(200).json(pacientes);
 });
 
@@ -24,14 +31,12 @@ app.post("/pacientes", (req, res) => {
   };
   pacientes.push(pacienteCadastrado);
   console.log(pacientes);
-  return res
-    .status(201)
-    .json({
-      mensagem: "Paciente criado com sucesso",
-      dados: pacienteCadastrado,
-    });
+  return res.status(201).json({
+    mensagem: "Paciente criado com sucesso",
+    dados: pacienteCadastrado,
+  });
 });
 
 app.listen(3030, () => {
-  "servidor rodando em http://localhost:3030";
+  console.log("servidor rodando em http://localhost:3030");
 });
