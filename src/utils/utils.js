@@ -25,7 +25,8 @@ export function validarStatus(status) {
   if (status.statusAtendimento.trim() === "") return false;
   const dadosValidos = ["EM_ATENDIMENTO", "FINALIZADO"];
 
-  if (!dadosValidos.includes(status.statusAtendimento.trim().toUpperCase())) return false;
+  if (!dadosValidos.includes(status.statusAtendimento.trim().toUpperCase()))
+    return false;
   return true;
 }
 
@@ -35,10 +36,7 @@ export function incrementarId(lista) {
   return Math.max(...lista.map((item) => item.id));
 }
 
-
-export function buscarId(id){
-  const paciente = pacientes.find(
-    (p) => p.id === id,
-  );
-  return paciente
+export function buscarId(id) {
+  const paciente = pacientes.find((p) => p.id === id);
+  return paciente;
 }
