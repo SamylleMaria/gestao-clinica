@@ -1,5 +1,6 @@
 import express from 'express';
 import pacientesRoutes from './routes/pacientesRoutes.js'
+import { mostrarErro } from './middlewares/erroGlobal.js';
 
 const app = express();
 app.use(express.json());
@@ -10,6 +11,7 @@ app.get('/', (req, res) => {
   return res.json({ mensagem: 'ola, mundo'})}
 )
 
+app.use(mostrarErro)
 // ----
 app.listen(3030, () => {
   console.log("servidor rodando em http://localhost:3030");

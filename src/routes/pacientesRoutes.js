@@ -8,21 +8,22 @@ import {
   obterEstatisticas,
   processarLaudoExame,
 } from "../controllers/pacientesController.js";
+import { validarDadosExame, validarDadosPaciente, validarIdPaciente, validarStatus } from "../middlewares/validacoesMiddleware.js";
 
 const router = express.Router();
 
-router.post("/", cadastrarPaciente);
+router.post("/", validarDadosPaciente, cadastrarPaciente);
 
-router.post("/:id/exames", processarLaudoExame);
+router.post("/:id/exames", validarIdPaciente, processarLaudoExame);
 
 router.get("/", listarPacientes);
 
 router.get("/estatisticas", obterEstatisticas);
 
-router.get("/:id", buscarPacientePorId);
+router.get("/:id", validarIdPaciente, buscarPacientePorId);
 
-router.put("/:id", atualizarStatus);
+router.put("/:id", validarIdPaciente, validarStatus, atualizarStatus);
 
-router.delete("/:id", darAltaPaciente);
+router.delete("/:id", validarIdPaciente, darAltaPaciente);
 
 export default router;

@@ -1,13 +1,7 @@
-import {
-    buscarId,
-    incrementarId,
-    validarDados,
-    validarStatus,
-} from "../utils/utils.js";
+import { incrementarId } from "../utils/utils.js";
 import { pacientes } from "../utils/simulaBanco.js";
 import { analisarHemograma } from "../utils/laudosHelpers.js";
-
-
+import { validarIdPaciente } from "../middlewares/validacoesMiddleware.js";
 
 export function obterEstatisticas(req, res) {
   const totalCriticos = pacientes.filter((p) => p.gravidade === "ALTA");
@@ -36,21 +30,12 @@ export function listarPacientes(req, res) {
 }
 
 export function buscarPacientePorId(req, res) {
-  const id = Number(req.params.id);
-  const pacienteBuscado = buscarId(id);
-  if (!pacienteBuscado) {
-    return res.status(404).json({ erro: "Paciente não encontrado" });
-  }
-
+  const pacienteBuscado = req.pacienteBuscado;
   return res.status(200).json(pacienteBuscado);
 }
 
 export function cadastrarPaciente(req, res) {
   const paciente = req.body;
-  if (!validarDados(paciente)) {
-    return res.status(400).json({ erro: "Dados invávlidos" });
-  }
-
   const pacienteCadastrado = {
     id: incrementarId(pacientes) + 1,
     nome: paciente.nome.trim(),
@@ -66,22 +51,8 @@ export function cadastrarPaciente(req, res) {
 }
 
 export function processarLaudoExame(req, res) {
-  const id = Number(req.params.id);
-  const dados = req.body;
-  if (
-    !dados||
-    dados.hemoglobina === undefined ||
-    dados.leucocitos === undefined
-  ) {
-    return res.status(400).json({ erro: "Dados insuficientes para análise"});
-  }
-
-  const pacienteBuscado = buscarId(id);
-  if (!pacienteBuscado) {
-    return res.status(404).json({ erro: "Paciente não encontrado" });
-  }
-
-  const exame = analisarHemograma(dados);
+  const pacienteBuscado = req.pacienteBuscado;
+  const exame = analisarHemograma(req.body);
 
   if (exame.estadoCritico === true) {
     pacienteBuscado.gravidade = "ALTA";
@@ -96,17 +67,8 @@ export function processarLaudoExame(req, res) {
 }
 
 export function atualizarStatus(req, res) {
-  const id = Number(req.params.id);
   const status = req.body;
-  const pacienteBuscado = buscarId(id);
-
-  if (!pacienteBuscado) {
-    return res.status(404).json({ erro: "Paciente não encontrado" });
-  }
-
-  if (!validarStatus(status)) {
-    return res.status(400).json({ erro: "Status Inválido" });
-  }
+  const pacienteBuscado = req.pacienteBuscado;
 
   pacienteBuscado.statusAtendimento = status.statusAtendimento
     .trim()
@@ -117,14 +79,8 @@ export function atualizarStatus(req, res) {
 }
 
 export function darAltaPaciente(req, res) {
-  const id = Number(req.params.id);
-  const paciente = buscarId(id);
-
-  if (!paciente) {
-    return res.status(404).json({ erro: "Paciente não encontrado" });
-  }
-
-  const indice = pacientes.findIndex((paciente) => paciente.id === id);
+  const pacienteBuscado = req.pacienteBuscado;
+  const indice = pacientes.findIndex((paciente) => paciente.id === pacienteBuscado.id);
 
   pacientes.splice(indice, 1);
 
