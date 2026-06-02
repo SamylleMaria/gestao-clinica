@@ -1,4 +1,4 @@
-export function analistarHemograma(dados) {
+export function analisarHemograma(dados) {
   if (
     !dados ||
     dados.hemoglobina === undefined ||

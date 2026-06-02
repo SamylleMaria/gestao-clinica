@@ -6,7 +6,7 @@ import {
   validarDados,
   validarStatus,
 } from "../utils/utils.js";
-import { analistarHemograma } from "../utils/laudosHelpers.js";
+import { analisarHemograma } from "../utils/laudosHelpers.js";
 
 const router = express.Router();
 
@@ -39,7 +39,7 @@ router.post("/:id/exames", (req, res) => {
     return res.status(404).json({ erro: "Paciente não encontrado" });
   }
 
-  const exame = analistarHemograma(dados);
+  const exame = analisarHemograma(dados);
 
   pacienteBuscado.exame = exame;
 
