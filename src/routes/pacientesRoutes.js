@@ -40,6 +40,9 @@ router.post("/:id/exames", (req, res) => {
   }
 
   const exame = analisarHemograma(dados);
+  if(exame.estadoCritico === true) {
+    pacienteBuscado.gravidade = 'ALTA'
+  }
 
   pacienteBuscado.exame = exame;
 
