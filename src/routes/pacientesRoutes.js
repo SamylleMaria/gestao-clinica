@@ -6,6 +6,7 @@ import {
   validarDados,
   validarStatus,
 } from "../utils/utils.js";
+import { analistarHemograma } from "../utils/laudosHelpers.js";
 
 const router = express.Router();
 
@@ -23,11 +24,31 @@ router.post("/", (req, res) => {
     gravidade: paciente.gravidade.trim().toUpperCase(),
   };
   pacientes.push(pacienteCadastrado);
-  console.log(pacientes);
   return res.status(201).json({
     mensagem: "Paciente criado com sucesso",
     dados: pacienteCadastrado,
   });
+});
+
+router.post("/:id/exames", (req, res) => {
+  const id = Number(req.params.id);
+  const dados = req.body;
+  const pacienteBuscado = buscarId(id);
+
+  if (!pacienteBuscado) {
+    return res.status(404).json({ erro: "Paciente não encontrado" });
+  }
+
+  const exame = analistarHemograma(dados);
+
+  pacienteBuscado.exame = exame;
+
+  return res
+    .status(200)
+    .json({
+      mensagem: "Exame processado e anexado ao prontuário com sucesso!",
+      dados: pacienteBuscado,
+    });
 });
 
 router.get("/", (req, res) => {
