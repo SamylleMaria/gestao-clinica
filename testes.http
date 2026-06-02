@@ -33,6 +33,9 @@ GET http://localhost:3030/pacientes/estatisticas
 GET http://localhost:3030/pacientes/
 
 
+### Delete
+DELETE http://localhost:3030/pacientes/3
+
 ### Erro 1: Tentar anexar exame a um paciente inexistente
 # Saida Esperada: 404 Not Found - { "erro": "Paciente não encontrado" }
 POST http://localhost:3030/pacientes/999/exames
@@ -63,4 +66,4 @@ Content-Type: application/json
 
 ### Erro 4: Buscar paciente especifico que não existe
 # Saida Esperada: 404 Not Found
-GET http://localhost:3030/pacientes/999
+GET http://localhost:3030/pacientes/3
