@@ -1,12 +1,4 @@
 export function analisarHemograma(dados) {
-  if (
-    !dados ||
-    dados.hemoglobina === undefined ||
-    dados.leucocitos === undefined
-  ) {
-    return { diagnostico: "Dados insuficientes para análise" };
-  }
-
   const alertas = [];
   let estadoCritico = false;
 
@@ -26,6 +18,9 @@ export function analisarHemograma(dados) {
     alertas.push("Presença de Leucopenia (Imunidade baixa).");
   }
 
-  const diagnostico = alertas.length > 0 ? alertas.join (' ') : 'Resultados dentro dos padrões normais'
+  const diagnostico =
+    alertas.length > 0
+      ? alertas.join(" ")
+      : "Resultados dentro dos padrões normais";
   return { diagnostico, estadoCritico };
 }
