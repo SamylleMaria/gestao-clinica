@@ -23,7 +23,7 @@ export function validarDados(corpo) {
 export function validarStatus(status) {
   if (!status.statusAtendimento) return false;
   if (status.statusAtendimento.trim() === "") return false;
-  const dadosValidos = ["EM_ATENDIMENTO", "FINALIZADO"];
+  const dadosValidos = ["EM_ATENDIMENTO", "FINALIZADO", "AGUARDANDO"];
 
   if (!dadosValidos.includes(status.statusAtendimento.trim().toUpperCase()))
     return false;

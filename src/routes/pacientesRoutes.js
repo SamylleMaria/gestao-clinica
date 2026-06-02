@@ -40,18 +40,16 @@ router.post("/:id/exames", (req, res) => {
   }
 
   const exame = analisarHemograma(dados);
-  if(exame.estadoCritico === true) {
-    pacienteBuscado.gravidade = 'ALTA'
+  if (exame.estadoCritico === true) {
+    pacienteBuscado.gravidade = "ALTA";
   }
 
   pacienteBuscado.exame = exame;
 
-  return res
-    .status(200)
-    .json({
-      mensagem: "Exame processado e anexado ao prontuário com sucesso!",
-      dados: pacienteBuscado,
-    });
+  return res.status(200).json({
+    mensagem: "Exame processado e anexado ao prontuário com sucesso!",
+    dados: pacienteBuscado,
+  });
 });
 
 router.get("/", (req, res) => {
@@ -65,6 +63,20 @@ router.get("/", (req, res) => {
   }
 
   return res.status(200).json(pacientes);
+});
+
+router.get("/estatisticas", (req, res) => {
+  const totalCriticos = pacientes.filter((p) => p.gravidade === "ALTA");
+  const filaEspera = pacientes.filter(
+    (p) => p.statusAtendimento === "AGUARDANDO",
+  );
+
+  console.log(totalCriticos);
+  return res.status(200).json({
+    totalPacientes: pacientes.length,
+    totalCriticos:totalCriticos.length,
+    filaEspera:filaEspera.length,
+  });
 });
 
 router.get("/:id", (req, res) => {
