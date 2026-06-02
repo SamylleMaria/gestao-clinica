@@ -1,0 +1,66 @@
+### Passo 1: Criar Paciente 
+POST http://localhost:3030/pacientes
+Content-Type: application/json
+
+{
+  "nome": "Oliver Queen",
+  "idade": 35,
+  "sintomas": "Dor de cabeca severa e febre",
+  "gravidade": "baixa"
+}
+
+### Passo 2: Alterar Gravidade Dinamicamente via Exame (Paciente 3)
+POST http://localhost:3030/pacientes/3/exames
+Content-Type: application/json
+
+{
+  "hemoglobina": 7.5,
+  "leucocitos": 6000
+}
+
+### Passo 3: Alterar Status de Atendimento (Paciente 1)
+PUT http://localhost:3030/pacientes/1
+Content-Type: application/json
+
+{
+  "statusAtendimento": "AGUARDANDO"
+}
+
+### Passo 4: Apresentar estatísticas
+GET http://localhost:3030/pacientes/estatisticas
+
+### Passo 5: Listar todos os pacientes
+GET http://localhost:3030/pacientes/
+
+
+### Erro 1: Tentar anexar exame a um paciente inexistente
+# Saida Esperada: 404 Not Found - { "erro": "Paciente não encontrado" }
+POST http://localhost:3030/pacientes/999/exames
+Content-Type: application/json
+
+{
+  "hemoglobina": 12.5,
+  "leucocitos": 8000
+}
+
+### Erro 2: Enviar exame com dados incompletos (Falta leucocitos)
+# Saida Esperada: Deve retornar que os dados são insuficientes para análise
+POST http://localhost:3030/pacientes/3/exames
+Content-Type: application/json
+
+{
+  "hemoglobina": 7.5
+}
+
+### Erro 3: Tentar atualizar status de paciente inexistente
+# Saida Esperada: 404 Not Found
+PUT http://localhost:3030/pacientes/999
+Content-Type: application/json
+
+{
+  "statusAtendimento": "EM_ATENDIMENTO"
+}
+
+### Erro 4: Buscar paciente especifico que não existe
+# Saida Esperada: 404 Not Found
+GET http://localhost:3030/pacientes/999
