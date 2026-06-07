@@ -40,14 +40,13 @@ export function validarDadosPaciente(req, res, next) {
   next();
 }
 
-
 export function validarStatus(req, res, next) {
   const status = req.body;
   const dadosValidos = ["EM_ATENDIMENTO", "FINALIZADO", "AGUARDANDO"];
   if (
-    !status.statusAtendimento ||
-    status.statusAtendimento.trim() === "" ||
-    !dadosValidos.includes(status.statusAtendimento.trim().toUpperCase())
+    !status.status_atendimento ||
+    status.status_atendimento.trim() === "" ||
+    !dadosValidos.includes(status.status_atendimento.trim().toUpperCase())
   )
     return res.status(400).json({ erro: "Status inválido" });
 
