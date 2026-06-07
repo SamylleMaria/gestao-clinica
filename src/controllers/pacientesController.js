@@ -108,16 +108,27 @@ export function processarLaudoExame(req, res) {
   });
 }
 
-export function atualizarStatus(req, res) {
-  const status = req.body;
-  const pacienteBuscado = req.pacienteBuscado;
+export async function atualizarStatus(req, res, next) {
+  try {
+    const statusBuscado = req.body;
+    const statusSanitizado = statusBuscado.status_atendimento
+      .trim()
+      .toUpperCase();
+    const id = req.params.id;
 
-  pacienteBuscado.statusAtendimento = status.statusAtendimento
-    .trim()
-    .toUpperCase();
-  return res
-    .status(200)
-    .json({ mensagem: "Paciente modificado", dados: pacienteBuscado });
+    const query = `
+    UPDATE pacientes SET status_atendimento = $1 WHERE id = $2 RETURNING *`;
+
+    const resultado = await pool.query(query, [statusSanitizado, id]);
+    if (resultado.rowCount === 0) {
+      return res.status(404).json({ mensagem: "Paciente não encontrado" });
+    }
+    const pacienteAtualizado = resultado.rows[0];
+
+    return res.status(200).json(pacienteAtualizado);
+  } catch (error) {
+    next(error);
+  }
 }
 
 export function darAltaPaciente(req, res) {
