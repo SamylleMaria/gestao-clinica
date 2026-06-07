@@ -1,4 +1,5 @@
 import { pacientes } from "../utils/simulaBanco.js";
+import { validarGravidade } from "../utils/utils.js";
 
 export function validarDadosExame(req, res, next) {
   const dados = req.body;
@@ -16,27 +17,29 @@ export function validarDadosPaciente(req, res, next) {
   const paciente = req.body;
   if (
     !paciente.nome ||
-    !paciente.idade ||
-    !paciente.sintomas ||
+    !paciente.data_nascimento ||
+    !paciente.cpf ||
     !paciente.gravidade
   ) {
     return res.status(400).json({ erro: "Dados incompletos" });
   }
+  const regexData = /^\d{4}-\d{2}-\d{2}$/;
+  const data_nascimento = paciente.data_nascimento;
   if (
     paciente.nome.trim() === "" ||
-    typeof paciente.idade !== "number" ||
-    paciente.sintomas.trim() === "" ||
+    regexData.test(data_nascimento) === false ||
+    paciente.cpf.trim() === "" ||
     paciente.gravidade.trim() === ""
   ) {
     return res.status(400).json({ erro: "Dados inválidos" });
   }
 
-  const opcoesValidas = ["BAIXA", "MEDIA", "ALTA"];
-  if (!opcoesValidas.includes(paciente.gravidade.trim().toUpperCase())) {
-    return res.status(400).json({ erro: "Dados inválidos" });
+  if (!validarGravidade(paciente.gravidade.trim().toUpperCase())) {
+    return res.status(400).json({ erro: 'Gravidade Inválida.'})
   }
   next();
 }
+
 
 export function validarStatus(req, res, next) {
   const status = req.body;
