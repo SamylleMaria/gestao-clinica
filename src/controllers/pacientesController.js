@@ -1,5 +1,4 @@
 import { incrementarId, validarGravidade } from "../utils/utils.js";
-// import { pacientes } from "../utils/simulaBanco.js";
 import pool from "../utils/db.js";
 import { analisarHemograma } from "../utils/laudosHelpers.js";
 import { validarIdPaciente } from "../middlewares/validacoesMiddleware.js";
@@ -23,7 +22,7 @@ export async function listarPacientes(req, res, next) {
 
     if (gravidade && !validarGravidade(gravidade)) {
       return res.status(400).json({ erro: "Gravidade Inválida" });
-    } 
+    }
     if (gravidade) {
       const query = `
     SELECT id, nome, data_nascimento, cpf, gravidade FROM pacientes WHERE gravidade = $1;`;
@@ -45,9 +44,21 @@ export async function listarPacientes(req, res, next) {
   }
 }
 
-export function buscarPacientePorId(req, res) {
-  const pacienteBuscado = req.pacienteBuscado;
-  return res.status(200).json(pacienteBuscado);
+export async function buscarPacientePorId(req, res, next) {
+  try {
+    const id = req.params.id;
+    const query = `
+    SELECT * FROM pacientes WHERE id = $1;`;
+    const resultado = await pool.query(query, [id]);
+    if (resultado.rowCount === 0) {
+      return res.status(404).json({ mensagem: "Paciente não encontrado" });
+    }
+    const pacienteBuscado = resultado.rows[0];
+
+    return res.status(200).json(pacienteBuscado);
+  } catch (error) {
+    next(error);
+  }
 }
 
 export async function cadastrarPaciente(req, res, next) {
