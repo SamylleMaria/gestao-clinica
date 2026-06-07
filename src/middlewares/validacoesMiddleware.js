@@ -1,4 +1,3 @@
-import { pacientes } from "../utils/simulaBanco.js";
 import { validarGravidade } from "../utils/utils.js";
 
 export function validarDadosExame(req, res, next) {
