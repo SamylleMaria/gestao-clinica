@@ -55,13 +55,12 @@ export function validarStatus(req, res, next) {
 }
 
 export function validarIdPaciente(req, res, next) {
-  const id = Number(req.params.id);
-  const paciente = pacientes.find((p) => p.id === id);
+  const id = req.params.id;
+  const regexUuid = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
 
-  if (!paciente) {
-    return res.status(404).json({ erro: "Paciente não encontrado" });
+  if (!regexUuid.test(id)) {
+    return res.status(400).json({ erro: "O ID fornecido não é válido." });
   }
-  req.pacienteBuscado = paciente;
 
   next();
 }
