@@ -1,4 +1,4 @@
-import { incrementarId, validarGravidade } from "../utils/utils.js";
+import { validarGravidade } from "../utils/utils.js";
 import pool from "../utils/db.js";
 import { analisarHemograma } from "../utils/laudosHelpers.js";
 import { validarIdPaciente } from "../middlewares/validacoesMiddleware.js";
@@ -131,13 +131,17 @@ export async function atualizarStatus(req, res, next) {
   }
 }
 
-export function darAltaPaciente(req, res) {
-  const pacienteBuscado = req.pacienteBuscado;
-  const indice = pacientes.findIndex(
-    (paciente) => paciente.id === pacienteBuscado.id,
-  );
-
-  pacientes.splice(indice, 1);
-
-  return res.status(204).send();
+export async function darAltaPaciente(req, res, next) {
+  try {
+    const id = req.params.id;
+    const query = `
+    DELETE FROM pacientes WHERE id = $1;`;
+    const resultado = await pool.query(query, [id]);
+    if (resultado.rowCount === 0) {
+      return res.status(404).json({ mensagem: "Paciente não encontrado" });
+    }
+    return res.status(204).send();
+  } catch (error) {
+    next(error);
+  }
 }
