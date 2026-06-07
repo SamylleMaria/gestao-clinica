@@ -107,20 +107,69 @@ export async function cadastrarPaciente(req, res, next) {
   }
 }
 
-export function processarLaudoExame(req, res) {
-  const pacienteBuscado = req.pacienteBuscado;
-  const exame = analisarHemograma(req.body);
+export async function processarLaudoExame(req, res, next) {
+  const client = await pool.connect();
 
-  if (exame.estadoCritico === true) {
-    pacienteBuscado.gravidade = "ALTA";
+  try {
+    const id = req.params.id;
+    const { tipo_exame, resultados } = req.body;
+
+    const exameAnalisado = analisarHemograma(resultados);
+
+    await client.query("BEGIN");
+
+    const queryBuscarPaciente = `SELECT * FROM pacientes WHERE id = $1;`;
+    const resultadoPaciente = await client.query(queryBuscarPaciente, [id]);
+
+    if (resultadoPaciente.rowCount === 0) {
+      await client.query("ROLLBACK");
+      return res.status(404).json({ mensagem: "Paciente não encontrado" });
+    }
+
+    let pacienteDados = resultadoPaciente.rows[0];
+
+    const queryInserirExame = `
+      INSERT INTO exames (paciente_id, tipo_exame, resultados)
+      VALUES ($1, $2, $3)
+      RETURNING *;
+    `;
+    
+    const dadosExameJson = JSON.stringify({
+      resultados_brutos: resultados,
+      analise: exameAnalisado
+    });
+
+    await client.query(queryInserirExame, [id, tipo_exame, dadosExameJson]);
+
+    if (exameAnalisado.estadoCritico === true) {
+      const queryAtualizarGravidade = `
+        UPDATE pacientes 
+        SET gravidade = 'ALTA' 
+        WHERE id = $1 
+        RETURNING *;
+      `;
+      const resultadoUpdate = await client.query(queryAtualizarGravidade, [id]);
+      pacienteDados = resultadoUpdate.rows[0]; 
+    }
+
+    await client.query("COMMIT");
+
+    return res.status(200).json({
+      mensagem: "Exame processado e anexado ao prontuário com sucesso!",
+      paciente: pacienteDados,
+      exame: {
+        tipo_exame,
+        resultados,
+        analise: exameAnalisado
+      }
+    });
+
+  } catch (error) {
+    await client.query("ROLLBACK");
+    next(error);
+  } finally {
+    client.release();
   }
-
-  pacienteBuscado.exame = exame;
-
-  return res.status(200).json({
-    mensagem: "Exame processado e anexado ao prontuário com sucesso!",
-    dados: pacienteBuscado,
-  });
 }
 
 export async function atualizarStatus(req, res, next) {
