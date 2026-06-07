@@ -5,3 +5,9 @@ export function incrementarId(lista) {
 
   return Math.max(...lista.map((item) => item.id));
 }
+
+
+export function validarGravidade(gravidade) {
+  const opcoesValidas = ["BAIXA", "MEDIA", "ALTA"];
+  return opcoesValidas.includes(gravidade.trim().toUpperCase());
+}
