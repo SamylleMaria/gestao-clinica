@@ -3,17 +3,32 @@ import pool from "../utils/db.js";
 import { analisarHemograma } from "../utils/laudosHelpers.js";
 import { validarIdPaciente } from "../middlewares/validacoesMiddleware.js";
 
-export function obterEstatisticas(req, res) {
-  const totalCriticos = pacientes.filter((p) => p.gravidade === "ALTA");
-  const filaEspera = pacientes.filter(
-    (p) => p.statusAtendimento === "AGUARDANDO",
-  );
+export async function obterEstatisticas(req, res, next) {
+  try {
+    const queryTotalPacientes = `
+    SELECT COUNT(*) FROM pacientes;`;
+    const queryTotalCriticos = `
+    SELECT COUNT(*) FROM pacientes WHERE gravidade = 'ALTA';`;
+    const queryFilaEspera = `
+    SELECT COUNT(*) FROM pacientes WHERE status_atendimento = 'AGUARDANDO';`;
 
-  return res.status(200).json({
-    totalPacientes: pacientes.length,
-    totalCriticos: totalCriticos.length,
-    filaEspera: filaEspera.length,
-  });
+    const [resultadoTotal, resultadoCriticos, ResultadoFila] =
+      await Promise.all([
+        pool.query(queryTotalPacientes),
+        pool.query(queryTotalCriticos),
+        pool.query(queryFilaEspera),
+      ]);
+
+    const estatisticas = {
+      totalPacientes: Number(resultadoTotal.rows[0].count),
+      totalCriticos: Number(resultadoCriticos.rows[0].count),
+      filaEspera: Number(ResultadoFila.rows[0].count),
+    };
+
+    return res.status(200).json(estatisticas);
+  } catch (error) {
+    next(error);
+  }
 }
 
 export async function listarPacientes(req, res, next) {
